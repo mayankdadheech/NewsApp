@@ -1,6 +1,5 @@
 import React from 'react';
-
-import NewsListContainer from '../components/MainScreen/containers/NewsListContainer';
+import NewsListContainer from '@components/MainScreen/containers/NewsListContainer';
 
 function MainScreen() {
   return <NewsListContainer />;

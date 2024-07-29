@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import SplashScreen from 'react-native-splash-screen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import AppNavigator from './AppNavigator';
+import AppNavigator from '@navigators/AppNavigator';
 
 const SwitchStack = createNativeStackNavigator();
 /*
@@ -11,7 +11,7 @@ https://avishekkumaar.medium.com/how-to-setting-up-a-splash-screen-in-react-nati
 https://medium.com/@appstud/add-a-splash-screen-to-a-react-native-app-810492e773f9
 https://medium.com/@svbala99/set-up-splash-screen-in-react-native-for-ios-and-android-2023-dbedb87fe75e
 */
-function MainNavigator() {
+function Navigators() {
   useEffect(() => {
     SplashScreen.hide();
   }, []);
@@ -25,4 +25,4 @@ function MainNavigator() {
   );
 }
 
-export default MainNavigator;
+export default Navigators;

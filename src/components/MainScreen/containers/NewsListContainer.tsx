@@ -7,11 +7,11 @@ import {
   addNewHeadlines,
   fetchInitialHeadlinesAction,
   getStoredHeadlinesAction,
-} from '../../../store/slices/headlinesSlice';
-import {useDispatch} from '../../../store/useDispatch';
-import {RootState} from '../../../store/types';
-import NewsList from '../presentationalComponents/NewsList';
-import logger from '../../../utils/logger';
+} from '@slices/headlinesSlice';
+import {useDispatch} from '@store/useDispatch';
+import {RootState} from '@store/types';
+import logger from '@utils/logger';
+import NewsList from '@components/MainScreen/presentationalComponents/NewsList';
 
 const NewsListContainer: React.FC = () => {
   const dispatch = useDispatch();

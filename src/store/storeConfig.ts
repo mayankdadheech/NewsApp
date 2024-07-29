@@ -1,5 +1,5 @@
 import {configureStore} from '@reduxjs/toolkit';
-import headlinesReducer from './slices/headlinesSlice';
+import headlinesReducer from '@slices/headlinesSlice';
 
 const store = configureStore({
   reducer: {

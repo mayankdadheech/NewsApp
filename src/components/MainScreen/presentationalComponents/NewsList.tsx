@@ -1,11 +1,11 @@
 import React from 'react';
-import {FlatList, Text, View, StyleSheet, Pressable} from 'react-native';
+import {FlatList, View, StyleSheet, Pressable} from 'react-native';
 
-import {Headline} from '../../../store/slices/headlinesSlice';
+import {Headline} from '@store/slices/headlinesSlice';
 
-import NewsItemContainer from '../containers/NewsItemContainer';
-import Icon from '../../../../assets/icons/icon';
-import {moderateScale, scale, verticalScale} from '../../../utils/scalingUtils';
+import NewsItemContainer from '@components/MainScreen/containers/NewsItemContainer';
+import Icon from '@assets/icons/icon';
+import {moderateScale, scale, verticalScale} from '@utils/scalingUtils';
 
 interface NewsListProps {
   pinnedHeadlines: Headline[];

@@ -1,11 +1,11 @@
-import {useCallback, useRef, useState} from 'react';
-import NewsItem from '../presentationalComponents/NewsItem';
+import {useCallback, useRef} from 'react';
+import NewsItem from '@components/MainScreen/presentationalComponents/NewsItem';
 import {
   deleteHeadline,
   Headline,
   pinHeadline,
-} from '../../../store/slices/headlinesSlice';
-import {useDispatch} from '../../../store/useDispatch';
+} from '@store/slices/headlinesSlice';
+import {useDispatch} from '@store/useDispatch';
 import {Swipeable} from 'react-native-gesture-handler';
 
 interface NewsItemProps {

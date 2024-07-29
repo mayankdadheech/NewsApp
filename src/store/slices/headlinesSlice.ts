@@ -1,8 +1,8 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import apiCaller from '../../api/client';
+import apiCaller from '@api/client';
 import Config from 'react-native-config';
-import logger from '../../utils/logger';
+import logger from '@utils/logger';
 
 export interface Headline {
   id: string;

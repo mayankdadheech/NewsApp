@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Refresh from './refresh';
-import AppIcon from './app-icon';
-import News from './news';
-import Delete from './delete';
-import Pin from './pin';
-import Pin10 from './pin-10';
+import Refresh from '@assets/icons/refresh';
+import AppIcon from '@assets/icons/app-icon';
+import News from '@assets/icons/news';
+import Delete from '@assets/icons/delete';
+import Pin from '@assets/icons/pin';
+import Pin10 from '@assets/icons/pin-10';
 
 export const icons = {
   refresh: props => <Refresh {...props} />,
