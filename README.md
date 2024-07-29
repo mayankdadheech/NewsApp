@@ -19,3 +19,5 @@ Things that could have been added if more time was given:
 - Shimmer/Skeleton Loaders.
 
 Please note: I have not handled any Fallback UIs due to time constraints except fallbackImage.
+
+Added absolute imports.
