@@ -5,7 +5,7 @@ import Config from 'react-native-config';
 
 import {
   addNewHeadlines,
-  fetchHeadlinesAction,
+  fetchInitialHeadlinesAction,
   getStoredHeadlinesAction,
 } from '../../../store/slices/headlinesSlice';
 import {useDispatch} from '../../../store/useDispatch';
@@ -57,7 +57,7 @@ const NewsListContainer: React.FC = () => {
           language: 'en',
           q: 'bitcoin', // Assumed that this can vary accordingly. As in top-headlines, I was not getting data of more than 100 size.
         };
-        await dispatch(fetchHeadlinesAction(params)).unwrap();
+        await dispatch(fetchInitialHeadlinesAction(params)).unwrap();
       }
     } catch (error) {
       logger.error('Error loading headlines:', error);

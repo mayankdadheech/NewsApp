@@ -2,6 +2,7 @@ import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import apiCaller from '../../api/client';
 import Config from 'react-native-config';
+import logger from '../../utils/logger';
 
 export interface Headline {
   id: string;
@@ -35,8 +36,12 @@ const initialState: HeadlinesState = {
   error: null,
 };
 
-export const fetchHeadlinesAction = createAsyncThunk(
-  'headlines/fetchHeadlines',
+interface RootState {
+  headlines: HeadlinesState;
+}
+
+export const fetchInitialHeadlinesAction = createAsyncThunk(
+  'headlines/fetchInitialHeadlines',
   async (
     params: {apiKey: string; q: string; language: string},
     {dispatch, rejectWithValue},
@@ -45,20 +50,62 @@ export const fetchHeadlinesAction = createAsyncThunk(
       const response = await apiCaller({
         url: `${Config.NEWS_URL}`,
         method: 'GET',
-        params: {...params, pageSize: 100},
+        params: {...params, pageSize: 20, page: 1},
       });
 
-      const headlines: Headline[] = response.articles.slice(0, 100);
-      await AsyncStorage.setItem('headlines', JSON.stringify(headlines));
-      return headlines;
+      const initialHeadlines: Headline[] = response.articles;
+      await AsyncStorage.setItem('headlines', JSON.stringify(initialHeadlines));
+
+      // Dispatch background fetching action
+      dispatch(fetchMoreHeadlinesInBackgroundAction(params));
+
+      return initialHeadlines;
     } catch (error: unknown) {
-      // Type assertion approach
       if (error instanceof Error) {
-        console.error('Error fetching headlines:', error.message);
+        logger.error('Error fetching initial headlines:', error.message);
         return rejectWithValue(error.message);
       }
-      // Fallback error handling if the error is not an instance of Error
-      console.error('Unknown error fetching headlines:', error);
+      logger.error('Unknown error fetching initial headlines:', error);
+      return rejectWithValue('An unknown error occurred');
+    }
+  },
+);
+
+export const fetchMoreHeadlinesInBackgroundAction = createAsyncThunk(
+  'headlines/fetchMoreHeadlinesInBackground',
+  async (
+    params: {apiKey: string; q: string; language: string},
+    {rejectWithValue, getState},
+  ) => {
+    const allPages = [2, 3, 4, 5]; // Here, for element 21 to 100 will be fetched in the background, while fetchInitialHeadlinesAction will only fetch upto first 20 news elements.
+    try {
+      // Creating an array of promises for fetching pages
+      const fetchPagePromises = allPages.map(page =>
+        apiCaller({
+          url: `${Config.NEWS_URL}`,
+          method: 'GET',
+          params: {...params, pageSize: 20, page},
+        }),
+      );
+
+      // Await all the promises: Handling background fetch with promise.all
+      const responses = await Promise.all(fetchPagePromises);
+
+      // Extracting articles from each response and flatten them into a single array
+      let allHeadlines: Headline[] = responses.flatMap(
+        response => response.articles,
+      );
+      const state = getState() as RootState;
+      // Merging allHeadlines with the existing headlines in the state
+      const mergedHeadlines = [...state.headlines.headlines, ...allHeadlines];
+      await AsyncStorage.setItem('headlines', JSON.stringify(mergedHeadlines));
+      return mergedHeadlines;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        logger.error('Error fetching more headlines:', error.message);
+        return rejectWithValue(error.message);
+      }
+      logger.error('Unknown error fetching more headlines:', error);
       return rejectWithValue('An unknown error occurred');
     }
   },
@@ -80,10 +127,10 @@ export const getStoredHeadlinesAction = createAsyncThunk(
       };
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error('Error getting stored headlines:', error.message);
+        logger.error('Error getting stored headlines:', error.message);
         return rejectWithValue(error.message);
       }
-      console.error('Unknown error getting stored headlines:', error);
+      logger.error('Unknown error getting stored headlines:', error);
       return rejectWithValue('An unknown error occurred');
     }
   },
@@ -149,18 +196,37 @@ const headlinesSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addCase(fetchHeadlinesAction.pending, state => {
+      .addCase(fetchInitialHeadlinesAction.pending, state => {
         state.loading = true;
+        state.error = null;
       })
-      .addCase(fetchHeadlinesAction.fulfilled, (state, action) => {
-        state.loading = false;
+      .addCase(fetchInitialHeadlinesAction.fulfilled, (state, action) => {
         state.headlines = action.payload;
         state.displayedHeadlines = action.payload.slice(0, 10);
+        state.loading = false;
       })
-      .addCase(fetchHeadlinesAction.rejected, (state, action) => {
+      .addCase(fetchInitialHeadlinesAction.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'An error occurred';
       })
+      .addCase(fetchMoreHeadlinesInBackgroundAction.pending, state => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchMoreHeadlinesInBackgroundAction.fulfilled,
+        (state, action) => {
+          state.headlines = action.payload;
+          state.loading = false;
+        },
+      )
+      .addCase(
+        fetchMoreHeadlinesInBackgroundAction.rejected,
+        (state, action) => {
+          state.loading = false;
+          state.error = action.error.message || 'An error occurred';
+        },
+      )
       .addCase(getStoredHeadlinesAction.pending, state => {
         state.loading = true;
       })

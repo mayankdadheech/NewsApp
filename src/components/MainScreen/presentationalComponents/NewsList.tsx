@@ -39,6 +39,10 @@ const NewsList: React.FC<NewsListProps> = ({
         keyExtractor={(item: Headline) => item.title}
         refreshing={false}
         onRefresh={onRefresh}
+        initialNumToRender={10}
+        maxToRenderPerBatch={5}
+        windowSize={10}
+        removeClippedSubviews={true}
       />
     </View>
   );
